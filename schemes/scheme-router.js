@@ -100,17 +100,22 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
-
-  Schemes.remove(id)
+  Schemes.findById(id)
+  .then(scheme => {
+    Schemes.remove(id)
   .then(deleted => {
-    if (deleted) {
-      res.json({ removed: deleted });
+    if (deleted === 1) {
+      res.json({ removed: scheme });
     } else {
       res.status(404).json({ message: 'Could not find scheme with given id' });
     }
   })
   .catch(err => {
     res.status(500).json({ message: 'Failed to delete scheme' });
+  });
+  })
+  .catch(err => {
+    res.status(500).json({ message: 'Failed to delete scheme - cannot find this id' });
   });
 });
 
